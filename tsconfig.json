@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "outDir": "./build",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "@modules/*": [
+        "./src/modules/*"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@providers/*": [
+        "./src/shared/container/providers/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "importsNotUsedAsValues": "remove",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "vite.config.ts",
+    "vite.config.unit.ts",
+    "vite.config.e2e.ts",
+    "./scripts"
+  ]
+}
