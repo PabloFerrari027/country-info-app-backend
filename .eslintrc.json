@@ -25,6 +25,13 @@
         "@typescript-eslint/adjacent-overload-signatures": "off",
         "@typescript-eslint/no-empty-interface": "off",
         "@typescript-eslint/ban-types": "off",
-        "no-async-promise-executor": "off"
+        "no-async-promise-executor": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "@typescript-eslint/method-signature-style": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/lines-between-class-members": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
     }
 }

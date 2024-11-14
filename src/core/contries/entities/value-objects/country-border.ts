@@ -3,7 +3,7 @@ export interface CountryBorderProps {
 	officialName: string;
 	countryCode: string;
 	region: string;
-	borders: null;
+	borders: CountryBorder[];
 }
 
 export interface CountryBorderJSON {
@@ -11,11 +11,11 @@ export interface CountryBorderJSON {
 	officialName: string;
 	countryCode: string;
 	region: string;
-	borders: null;
+	borders: CountryBorderJSON[];
 }
 
 export class CountryBorder {
-	private props: CountryBorderProps;
+	readonly props: CountryBorderProps;
 
 	constructor(props: CountryBorderProps) {
 		this.props = props;
@@ -37,17 +37,13 @@ export class CountryBorder {
 		return this.props.region;
 	}
 
-	get borders(): null {
-		return this.props.borders;
-	}
-
 	toJSON(): CountryBorderJSON {
 		const output: CountryBorderJSON = {
-			borders: this.props.borders,
-			commonName: this.props.commonName,
 			countryCode: this.props.countryCode,
+			commonName: this.props.commonName,
 			officialName: this.props.officialName,
 			region: this.props.region,
+			borders: this.props.borders.map(border => border.toJSON()),
 		};
 
 		return output;

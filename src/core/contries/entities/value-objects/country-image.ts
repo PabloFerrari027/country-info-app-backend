@@ -13,7 +13,7 @@ export interface CountryImageJSON {
 }
 
 export class CountryImage {
-	private props: CountryImageProps;
+	readonly props: CountryImageProps;
 
 	constructor(props: CountryImageProps) {
 		this.props = props;
@@ -37,10 +37,10 @@ export class CountryImage {
 
 	toJSON(): CountryImageJSON {
 		const output: CountryImageJSON = {
+			name: this.props.name,
 			flag: this.props.flag,
 			iso2: this.props.iso2,
 			iso3: this.props.iso3,
-			name: this.props.name,
 		};
 
 		return output;

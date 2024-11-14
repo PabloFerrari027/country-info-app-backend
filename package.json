@@ -5,19 +5,27 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "format": "eslint src/**/*.ts --fix",
+    "build": "npx tsc && npx tsc-alias",
+    "start": "node -r tsconfig-paths/register build/shared/infra/server.js",
+    "dev": "npx tsx watch src/shared/infra/server.ts"
   },
   "keywords": [],
   "author": "Pablo Ferrari",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.7",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0",
+    "typescript": "^5.6.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@types/axios": "^0.14.4",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.0",
@@ -32,7 +40,6 @@
     "eslint-plugin-promise": "^6.6.0",
     "globals": "^15.12.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.6.3",
     "typescript-eslint": "^8.13.0"
   }
 }

@@ -15,9 +15,6 @@
       "@shared/*": [
         "./src/shared/*"
       ],
-      "@providers/*": [
-        "./src/shared/container/providers/*"
-      ],
       "@/*": [
         "./src/*"
       ]
@@ -34,10 +31,6 @@
     "src/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "vite.config.ts",
-    "vite.config.unit.ts",
-    "vite.config.e2e.ts",
-    "./scripts"
+    "node_modules"
   ]
 }

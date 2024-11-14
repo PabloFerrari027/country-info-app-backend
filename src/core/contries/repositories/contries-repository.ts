@@ -1,7 +1,13 @@
-import { ListingParams } from '@shared/types/listing-params';
+import { ListingResponse } from '@shared/types/listing-response';
 import { Country } from '../entities/country';
 
-export interface ContriesRepository {
-	findByName(name: string): Country;
-	list(params?: ListingParams): Country;
+export interface CountriesRepository {
+	create(country: Country): Promise<Country>;
+	findByName(
+		name: string,
+		options?: { fields?: Record<string, boolean> },
+	): Promise<Country | null>;
+	list(options?: {
+		fields?: Record<string, boolean>;
+	}): Promise<ListingResponse<Country>>;
 }

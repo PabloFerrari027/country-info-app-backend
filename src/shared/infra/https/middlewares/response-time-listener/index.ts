@@ -7,10 +7,11 @@ export class ResponseTimeListener {
 		const timer = setTimeout(() => {
 			const message = 'Exceeded response time';
 			res.status(503).send(message);
-			return;
 		}, timeout);
 
-		res.on('finish', () => clearTimeout(timer));
+		res.on('finish', () => {
+			clearTimeout(timer);
+		});
 
 		next();
 	}

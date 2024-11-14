@@ -9,103 +9,61 @@ import {
 } from './value-objects/country-population';
 
 export interface CountryProps {
-	commonName: string;
-	officialName: string;
-	countryCode: string;
-	region: string;
-	image: CountryImage;
-	country: string;
+	name: string;
 	code: string;
-	iso3: string;
-	populationCounts: Array<CountryPopulation>;
-	borders: Array<CountryBorder>;
+	image: CountryImage | null;
+	population: CountryPopulation[];
+	borders: CountryBorder[];
 }
 
 export interface CountryJSON {
-	commonName: string;
-	officialName: string;
-	countryCode: string;
-	region: string;
-	image: CountryImageJSON;
-	country: string;
+	name: string;
 	code: string;
-	iso3: string;
-	populationCounts: Array<CountryPopulationJSON>;
-	borders: Array<CountryBorderJSON>;
+	image: CountryImageJSON | null;
+	population: CountryPopulationJSON[];
+	borders: CountryBorderJSON[];
 }
 
 export class Country {
-	private props: CountryProps;
+	readonly props: CountryProps;
 
 	constructor(props: CountryProps) {
 		this.props = props;
 	}
 
-	get commonName(): string {
-		return this.props.commonName;
-	}
-
-	get officialName(): string {
-		return this.props.officialName;
-	}
-
-	get countryCode(): string {
-		return this.props.countryCode;
-	}
-
-	get region(): string {
-		return this.props.region;
-	}
-
-	get image(): CountryImage {
+	get image(): CountryImage | null {
 		return this.props.image;
 	}
 
-	get country(): string {
-		return this.props.country;
+	get name(): string {
+		return this.props.name;
 	}
 
 	get code(): string {
 		return this.props.code;
 	}
 
-	get iso3(): string {
-		return this.props.iso3;
+	get population(): CountryPopulation[] {
+		return this.props.population;
 	}
 
-	get populationCounts(): Array<CountryPopulation> {
-		return this.props.populationCounts;
-	}
-
-	get borders(): Array<CountryBorder> {
+	get borders(): CountryBorder[] {
 		return this.props.borders;
 	}
 
 	toJSON(): CountryJSON {
 		const code = this.code;
-		const commonName = this.commonName;
-		const country = this.country;
-		const countryCode = this.countryCode;
-		const iso3 = this.iso3;
-		const officialName = this.officialName;
-		const region = this.region;
+		const name = this.name;
 		const borders = this.borders.map(bordder => bordder.toJSON());
-		const image = this.image.toJSON();
-		const populationCounts = this.populationCounts.map(populationCount =>
-			populationCount.toJSON(),
-		);
+		const image = this.image?.toJSON() ?? null;
+		const population = this.population.map(population => population.toJSON());
 
 		const output: CountryJSON = {
-			borders,
+			name,
 			code,
-			commonName,
-			country,
-			countryCode,
 			image,
-			iso3,
-			officialName,
-			populationCounts,
-			region,
+			population,
+			borders,
 		};
 
 		return output;

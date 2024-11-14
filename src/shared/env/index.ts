@@ -1,7 +1,9 @@
 import { z } from 'zod';
+import 'dotenv/config';
 
 const schema = z.object({
 	FRONTEND_URL: z.string(),
+	PORT: z.coerce.number(),
 });
 
 const result = schema.safeParse(process.env);

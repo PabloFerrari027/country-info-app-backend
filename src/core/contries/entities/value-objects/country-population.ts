@@ -9,7 +9,7 @@ export interface CountryPopulationJSON {
 }
 
 export class CountryPopulation {
-	private props: CountryPopulationProps;
+	readonly props: CountryPopulationProps;
 
 	constructor(props: CountryPopulationProps) {
 		this.props = props;
