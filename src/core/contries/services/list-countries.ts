@@ -1,17 +1,13 @@
 import { inject, injectable } from 'tsyringe';
 import { CountriesRepository } from '../repositories/contries-repository';
-import { Country } from '../entities/country';
-
-interface Input {
-	fields?: Record<string, boolean>;
-}
-
-interface Output {
-	data: Country[];
-}
+import {
+	ListCountriesService,
+	Input,
+	Output,
+} from '../interfaces/list-countries-service';
 
 @injectable()
-export class ListCountries {
+export class ListCountries implements ListCountriesService {
 	constructor(
 		@inject('CountriesRepository')
 		readonly countriesRepository: CountriesRepository,

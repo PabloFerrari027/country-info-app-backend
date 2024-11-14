@@ -1,74 +1,23 @@
-import { container, injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { Request, Response } from 'express';
-import { ListCountries as ListCountriesService } from '../services/list-countries';
 import { isTrue } from '@shared/utils/isTrue';
 import { z } from 'zod';
+import { Controller } from '../../../shared/interfaces/controller';
 import { Country } from '../entities/country';
-
-function handleField(
-	item: Record<string, any>,
-	fields: Record<string, boolean>,
-	currentField: string,
-): Record<string, unknown> {
-	const output: Record<string, unknown> = {};
-
-	if (!item) return output;
-
-	for (const [key, value] of Object.entries(item)) {
-		let field = '';
-
-		if (fields[`${currentField}.*.${key}`]) {
-			field = currentField;
-		} else {
-			field = currentField ? `${currentField}.${key}` : key;
-		}
-
-		const hierarchies = field.split('.');
-		let currentHierarchy = '';
-		let isValid = fields[field];
-
-		for (const field of hierarchies) {
-			if (!isValid) continue;
-			if (!currentHierarchy) currentHierarchy = field;
-			else currentHierarchy += `.${field}`;
-			if (!fields[currentHierarchy]) isValid = false;
-		}
-
-		if (!isValid) continue;
-
-		if (Array.isArray(value)) {
-			const results = value.map(v =>
-				handleField(v as Record<string, any>, fields, field),
-			);
-			output[key] = results;
-			continue;
-		}
-
-		if (typeof value === 'object' && value !== null) {
-			const result = handleField(value as Record<string, any>, fields, field);
-			if (Object.keys(result).length > 0) output[key] = result;
-			continue;
-		}
-
-		output[key] = value;
-	}
-
-	return output;
-}
-
-function handleFields(
-	fields: Record<string, boolean>,
-	country: Country,
-): Record<string, unknown> {
-	const json = country.toJSON() as Record<string, any>;
-	return handleField(json, fields, '');
-}
+import { ListCountriesService } from '../interfaces/list-countries-service';
 
 @injectable()
-export class ListCountries {
+export class ListCountries extends Controller {
+	public constructor(
+		@inject('ListCountriesService')
+		readonly listCountriesService: ListCountriesService,
+	) {
+		super();
+	}
+
 	async execute(req: Request, res: Response): Promise<void> {
 		try {
-			const queerySchema = z.object({
+			const querySchema = z.object({
 				name: z.boolean().default(true),
 				code: z.boolean().default(true),
 				image: z.boolean().default(true),
@@ -86,9 +35,7 @@ export class ListCountries {
 				'borders.region': z.boolean().default(true),
 				'borders.borders': z.boolean().default(true),
 			});
-
-			const queryParsedResponse = await queerySchema.safeParseAsync(req.query);
-
+			const queryParsedResponse = await querySchema.safeParseAsync(req.query);
 			const querySuccess = isTrue.execute([
 				queryParsedResponse.success,
 				queryParsedResponse.data,
@@ -109,46 +56,42 @@ export class ListCountries {
 			}
 
 			const queryData: Record<string, boolean> = queryParsedResponse.data!;
+			const fields: Record<string, z.infer<typeof querySchema>> = {};
 
-			if (queryData['borders.commonName']) {
-				queryData['borders.*.commonName'] = true;
-				delete queryData['borders.commonName'];
-			}
+			Object.entries(queryData).forEach(([item, value]) => {
+				const keys = item.split('.');
+				let current = fields as Record<string, unknown>;
 
-			if (queryData['borders.officialName']) {
-				queryData['borders.*.officialName'] = true;
-				delete queryData['borders.officialName'];
-			}
+				for (let i = 0; i < keys.length - 1; i++) {
+					if (typeof current[keys[i]] === 'boolean') current[keys[i]] = {};
+					if (!current[keys[i]]) current[keys[i]] = {};
+					current = current[keys[i]] as Record<string, unknown>;
+				}
 
-			if (queryData['borders.countryCode']) {
-				queryData['borders.*.countryCode'] = true;
-				delete queryData['borders.countryCode'];
-			}
+				current[keys[keys.length - 1]] = value;
+			});
 
-			if (queryData['borders.region']) {
-				queryData['borders.*.region'] = true;
-				delete queryData['borders.region'];
-			}
+			const { data } = await this.listCountriesService.execute({ fields });
 
-			if (queryData['borders.borders']) {
-				queryData['borders.*.borders'] = true;
-				delete queryData['borders.borders'];
-			}
+			const output = data.reduce<Array<Record<string, Partial<Country>>>>(
+				(acc, item) => {
+					const result = this.filterProps<
+						Partial<Country>,
+						z.infer<typeof querySchema>
+					>(item.toJSON() as {}, fields);
+					if (Object.values(result).length > 0) acc.push(result);
+					return acc;
+				},
+				[],
+			);
 
-			const fields = queryData;
-
-			const listCountries = container.resolve(ListCountriesService);
-
-			const { data } = await listCountries.execute({ fields });
-
-			const output = data.map(country => handleFields(fields, country));
 			res.json(output).status(200).end();
 		} catch (error) {
 			const output = {
 				errors: [`Internal server error`],
 			};
 
-			res.json(output).status(404).end();
+			res.status(500).json(output).end();
 		}
 	}
 }

@@ -8,5 +8,8 @@ export const contriesRoutes = Router();
 const listCountries = container.resolve(ListCountries);
 const findCountryByName = container.resolve(FindCountryByName);
 
-contriesRoutes.get('/list', listCountries.execute);
+contriesRoutes.get('/list', async (req, res) => {
+	await listCountries.execute(req, res);
+});
+
 contriesRoutes.get('/find/by/name/:name', findCountryByName.execute);

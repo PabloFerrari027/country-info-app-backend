@@ -8,6 +8,6 @@ export interface CountriesRepository {
 		options?: { fields?: Record<string, boolean> },
 	): Promise<Country | null>;
 	list(options?: {
-		fields?: Record<string, boolean>;
+		fields?: Record<string, unknown>;
 	}): Promise<ListingResponse<Country>>;
 }
