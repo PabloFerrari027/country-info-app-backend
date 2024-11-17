@@ -5,22 +5,22 @@ import {
 	Input as _Input,
 } from '../../../shared/agreements/controller';
 import { Country, CountryJSON } from '../entities/country';
-import { ListCountriesService } from '../interfaces/list-countries-service';
 import { RequestSuccess } from '@shared/DTO/request-success';
 import { RequestError } from '@shared/DTO/request-error';
+import { FindCountryByCodeService } from '../interfaces/find-country-by-code-service';
 
 export type Input = _Input;
 
-type Success = Array<Partial<CountryJSON>>;
+type Success = Partial<CountryJSON>;
 type Error = unknown;
 
 export type Output = Promise<RequestSuccess<Success> | RequestError<Error>>;
 
 @injectable()
-export class ListCountries extends Controller {
+export class FindCountryByCode extends Controller {
 	public constructor(
-		@inject('ListCountriesService')
-		readonly listCountriesService: ListCountriesService,
+		@inject('FindCountryByCodeService')
+		readonly findCountryByCodeService: FindCountryByCodeService,
 	) {
 		super();
 	}
@@ -42,7 +42,14 @@ export class ListCountries extends Controller {
 				'borders.region': z.coerce.boolean().optional(),
 				'borders.borders': z.coerce.boolean().optional(),
 			});
+			const paramsSchema = z.object({
+				code: z.string(),
+			});
+
 			const queryParsedResponse = await querySchema.safeParseAsync(input.query);
+			const paramsParsedResponse = await paramsSchema.safeParseAsync(
+				input.params,
+			);
 
 			if (!queryParsedResponse.success || !queryParsedResponse.data) {
 				const errors =
@@ -59,8 +66,26 @@ export class ListCountries extends Controller {
 				return output;
 			}
 
+			if (!paramsParsedResponse.success || !paramsParsedResponse.data) {
+				const errors =
+					paramsParsedResponse.error?.issues.map(err => ({
+						path: err.path,
+						message: err.message,
+					})) ?? [];
+
+				const output = {
+					status: 400,
+					data: { errors },
+				};
+
+				return output;
+			}
+
 			const queryData: Record<string, boolean> = queryParsedResponse.data;
-			const fields: Record<string, z.infer<typeof querySchema>> = {};
+			const paramsData: z.infer<typeof paramsSchema> =
+				paramsParsedResponse.data;
+
+			const fields: Record<string, unknown> = {};
 
 			if (Object.values(queryData).length === 0) {
 				queryData.name = true;
@@ -80,7 +105,7 @@ export class ListCountries extends Controller {
 
 			Object.entries(queryData).forEach(([item, value]) => {
 				const keys = item.split('.');
-				let current = fields as Record<string, unknown>;
+				let current = fields;
 
 				for (let i = 0; i < keys.length - 1; i++) {
 					if (typeof current[keys[i]] === 'boolean') current[keys[i]] = {};
@@ -91,24 +116,29 @@ export class ListCountries extends Controller {
 				current[keys[keys.length - 1]] = value;
 			});
 
-			const { data: countries } = await this.listCountriesService.execute({
-				fields,
+			const code = paramsData.code;
+
+			const { data: country } = await this.findCountryByCodeService.execute({
+				code,
 			});
 
-			const data = countries.reduce<Array<Record<string, Partial<Country>>>>(
-				(acc, item) => {
-					const result = this.filterProps<
-						Partial<Country>,
-						z.infer<typeof querySchema>
-					>(item.toJSON() as {}, fields);
-					if (Object.values(result).length > 0) acc.push(result);
-					return acc;
-				},
-				[],
-			);
+			if (!country) {
+				const errors = ['Resource is not found'];
+				const output = {
+					status: 404,
+					data: { errors },
+				};
+
+				return output;
+			}
+
+			const result = this.filterProps<
+				Partial<Country>,
+				z.infer<typeof querySchema>
+			>(country.toJSON() as {}, fields as {});
 
 			const output: RequestSuccess<Success> = {
-				data,
+				data: result,
 				status: 200,
 			};
 

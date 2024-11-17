@@ -1,6 +1,11 @@
-import { contriesRoutes } from '@/core/contries/routes/countries.routes';
+import { ContriesRoutes } from '@/core/contries/routes/countries.routes';
 import { Router } from 'express';
 
-export const routes = Router();
+export class Routes {
+	static readonly router = Router();
 
-routes.use('/countries', contriesRoutes);
+	static execute(): void {
+		ContriesRoutes.execute();
+		this.router.use(ContriesRoutes.router);
+	}
+}

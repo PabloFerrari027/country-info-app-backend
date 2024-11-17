@@ -2,7 +2,7 @@ import { MakeCountriesRepository } from '@/core/contries/factories/make-countrie
 import { CountriesRepository } from '@/core/contries/repositories/contries-repository';
 
 interface Params {
-	type: 'PRODUCTION' | 'IN MEMORY';
+	type: 'PRODUCTION';
 }
 
 interface Repositories {

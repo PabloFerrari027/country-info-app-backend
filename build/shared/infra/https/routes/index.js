@@ -1,7 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.routes = void 0;
+exports.Routes = void 0;
 const countries_routes_1 = require("../../../../core/contries/routes/countries.routes");
 const express_1 = require("express");
-exports.routes = (0, express_1.Router)();
-exports.routes.use('/countries', countries_routes_1.contriesRoutes);
+class Routes {
+    static execute() {
+        countries_routes_1.ContriesRoutes.execute();
+        this.router.use(countries_routes_1.ContriesRoutes.router);
+    }
+}
+exports.Routes = Routes;
+Routes.router = (0, express_1.Router)();

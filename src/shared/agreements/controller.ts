@@ -1,4 +1,18 @@
-import { Request, Response } from 'express';
+import { RequestError } from '@shared/DTO/request-error';
+import { RequestSuccess } from '@shared/DTO/request-success';
+
+export interface Body {}
+export interface Params {}
+export interface Query {}
+export interface Input {
+	body: Body;
+	query: Query;
+	params: Params;
+}
+
+export interface Success {}
+export interface Error {}
+export type Output = Promise<RequestSuccess<Success> | RequestError<Error>>;
 
 export abstract class Controller {
 	filterProps<A, B>(
@@ -28,19 +42,6 @@ export abstract class Controller {
 
 			if (Array.isArray(data[key]) && filterKeys[key]) {
 				const arr = data[key] as Array<Record<string, A>>;
-
-				// const result = arr
-				// 	.map(item => {
-				// 		if (typeof item === 'object' && item !== null) {
-				// 			return this.filterProps(item as {}, filterKeys[key] as {});
-				// 		}
-
-				// 		return item;
-				// 	})
-				// 	.filter(item => {
-				// 		if (typeof item !== 'object') return true;
-				// 		return Object.values(item as {}).length > 0;
-				// 	});
 
 				const result = arr.reduce<Array<Record<string, A>>>((acc, item) => {
 					if (typeof item === 'object' && item !== null) {
@@ -73,5 +74,5 @@ export abstract class Controller {
 		return output;
 	}
 
-	abstract execute(req: Request, res: Response): Promise<void>;
+	abstract execute(input: Input): Output;
 }

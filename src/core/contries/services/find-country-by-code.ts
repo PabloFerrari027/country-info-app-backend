@@ -1,21 +1,21 @@
 import { inject, injectable } from 'tsyringe';
 import { CountriesRepository } from '../repositories/contries-repository';
 import {
-	ListCountriesService,
+	FindCountryByCodeService,
 	Input,
 	Output,
-} from '../interfaces/list-countries-service';
+} from '../interfaces/find-country-by-code-service';
 
 @injectable()
-export class ListCountries implements ListCountriesService {
+export class FindCountryByCode implements FindCountryByCodeService {
 	constructor(
 		@inject('CountriesRepository')
 		readonly countriesRepository: CountriesRepository,
 	) {}
 
 	async execute(input: Input): Promise<Output> {
-		const { data } = await this.countriesRepository.list();
-		const output: Output = { data };
+		const country = await this.countriesRepository.findByCode(input.code);
+		const output: Output = { data: country };
 		return output;
 	}
 }

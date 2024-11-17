@@ -19,10 +19,10 @@ class CountryImage {
     }
     toJSON() {
         const output = {
+            name: this.props.name,
             flag: this.props.flag,
             iso2: this.props.iso2,
             iso3: this.props.iso3,
-            name: this.props.name,
         };
         return output;
     }

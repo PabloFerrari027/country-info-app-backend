@@ -5,58 +5,33 @@ class Country {
     constructor(props) {
         this.props = props;
     }
-    get commonName() {
-        return this.props.commonName;
-    }
-    get officialName() {
-        return this.props.officialName;
-    }
-    get countryCode() {
-        return this.props.countryCode;
-    }
-    get region() {
-        return this.props.region;
-    }
     get image() {
         return this.props.image;
     }
-    get country() {
-        return this.props.country;
+    get name() {
+        return this.props.name;
     }
     get code() {
         return this.props.code;
     }
-    get iso3() {
-        return this.props.iso3;
-    }
-    get populationCounts() {
-        return this.props.populationCounts;
+    get population() {
+        return this.props.population;
     }
     get borders() {
         return this.props.borders;
     }
     toJSON() {
         const code = this.code;
-        const commonName = this.commonName;
-        const country = this.country;
-        const countryCode = this.countryCode;
-        const iso3 = this.iso3;
-        const officialName = this.officialName;
-        const region = this.region;
+        const name = this.name;
         const borders = this.borders.map(bordder => bordder.toJSON());
-        const image = this.image.toJSON();
-        const populationCounts = this.populationCounts.map(populationCount => populationCount.toJSON());
+        const image = this.image?.toJSON() ?? null;
+        const population = this.population.map(population => population.toJSON());
         const output = {
-            borders,
+            name,
             code,
-            commonName,
-            country,
-            countryCode,
             image,
-            iso3,
-            officialName,
-            populationCounts,
-            region,
+            population,
+            borders,
         };
         return output;
     }

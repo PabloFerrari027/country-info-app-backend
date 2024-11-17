@@ -2,6 +2,7 @@ import { z } from 'zod';
 import 'dotenv/config';
 
 const schema = z.object({
+	REDIS_URL: z.string(),
 	FRONTEND_URL: z.string(),
 	PORT: z.coerce.number(),
 });

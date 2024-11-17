@@ -6,11 +6,6 @@ const API_contries_repository_1 = require("../implementations/API-contries-repos
 class MakeCountriesRepository {
     static execute(params) {
         switch (params.type) {
-            case 'IN MEMORY': {
-                this.repository = tsyringe_1.container.resolve(API_contries_repository_1.APICountriesRepository);
-                tsyringe_1.container.registerInstance(this.key, this.repository);
-                return this.repository;
-            }
             case 'PRODUCTION': {
                 this.repository = tsyringe_1.container.resolve(API_contries_repository_1.APICountriesRepository);
                 tsyringe_1.container.registerInstance(this.key, this.repository);

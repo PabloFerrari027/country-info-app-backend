@@ -1,15 +1,41 @@
 import { Router } from 'express';
 import { container } from 'tsyringe';
 import { ListCountries } from '../controllers/list-contries';
-import { FindCountryByName } from '../controllers/find-country-by-name';
+import { FindCountryByCode } from '../controllers/find-country-by-code';
 
-export const contriesRoutes = Router();
+export class ContriesRoutes {
+	static readonly router = Router();
 
-const listCountries = container.resolve(ListCountries);
-const findCountryByName = container.resolve(FindCountryByName);
+	static execute(): void {
+		const listCountries = container.resolve(ListCountries);
+		const findCountryByCode = container.resolve(FindCountryByCode);
 
-contriesRoutes.get('/list', async (req, res) => {
-	await listCountries.execute(req, res);
-});
+		this.router.get('/countries/list', async (req, res) => {
+			const body = req.body;
+			const query = req.query;
+			const params = req.params;
 
-contriesRoutes.get('/find/by/name/:name', findCountryByName.execute);
+			const response = await listCountries.execute({
+				body,
+				params,
+				query,
+			});
+
+			res.status(response.status).json(response.data).end();
+		});
+
+		this.router.get('/countries/find/by/code/:code', async (req, res) => {
+			const body = req.body;
+			const query = req.query;
+			const params = req.params;
+
+			const response = await findCountryByCode.execute({
+				body,
+				params,
+				query,
+			});
+
+			res.status(response.status).json(response.data).end();
+		});
+	}
+}

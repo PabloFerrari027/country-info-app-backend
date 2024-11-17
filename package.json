@@ -7,8 +7,9 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "build": "npx tsc && npx tsc-alias",
-    "start": "node -r tsconfig-paths/register build/shared/infra/server.js",
-    "dev": "npx tsx watch src/shared/infra/server.ts"
+    "start": "node -r tsconfig-paths/register build/shared/infra/main",
+    "docker:compose": "docker-compose --project-name countries-app -f docker/docker-compose.yml up -d",
+    "dev": "npx tsx watch src/shared/infra/main"
   },
   "keywords": [],
   "author": "Pablo Ferrari",
@@ -18,7 +19,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "redis": "^4.7.0",
     "reflect-metadata": "^0.2.2",
+    "ts-node": "^10.9.2",
     "tsyringe": "^4.8.0",
     "typescript": "^5.6.3",
     "zod": "^3.23.8"

@@ -8,5 +8,5 @@ const app_1 = require("./app");
 const env_1 = __importDefault(require("../env"));
 const port = env_1.default.PORT;
 exports.server = app_1.app.listen(port, () => {
-    console.log('server listening on port ' + port);
+    console.log('Server listening on port ' + port);
 });

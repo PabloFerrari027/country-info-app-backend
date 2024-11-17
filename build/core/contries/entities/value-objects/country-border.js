@@ -17,16 +17,13 @@ class CountryBorder {
     get region() {
         return this.props.region;
     }
-    get borders() {
-        return this.props.borders;
-    }
     toJSON() {
         const output = {
-            borders: this.props.borders,
-            commonName: this.props.commonName,
             countryCode: this.props.countryCode,
+            commonName: this.props.commonName,
             officialName: this.props.officialName,
             region: this.props.region,
+            borders: this.props.borders.map(border => border.toJSON()),
         };
         return output;
     }
